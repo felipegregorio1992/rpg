@@ -53,7 +53,7 @@ serve(async (req: Request) => {
     }
 
     // Call AI API (OpenAI-compatible — GPT-6 Luna)
-    const aiApiKey = Deno.env.get('AI_API_KEY');
+    const aiApiKey = Deno.env.get('OPENAI_API_KEY');
     const aiApiUrl =
       Deno.env.get('AI_API_URL') ?? 'https://api.openai.com/v1/chat/completions';
     const aiModel = Deno.env.get('AI_MODEL') ?? 'gpt-4o';
