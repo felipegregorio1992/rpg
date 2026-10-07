@@ -147,38 +147,20 @@ export function rollDuo20(
     };
   }
 
-  // Priority 6: Any die = 1 (only matters if selected is 1, i.e. both were low)
-  if (dice1 === 1 || dice2 === 1) {
-    // selected is already Math.max — if the max is 1 that means both were 1 (handled above)
-    // If one is 1 and the other isn't, the selected is the higher one, so this is not a desastre
-    // per rule 6 "any die = 1 → isDesastre" — selected still stays the max
-    if (selected === 1) {
-      isDesastre = true;
-      const total = selected + modifier;
-      return {
-        dice1,
-        dice2,
-        selected,
-        modifier,
-        total,
-        isTriunfo: false,
-        isDesastre: true,
-        isEpico: false,
-        isAnulado: false,
-        isNumerosIguais: false,
-        result: 'desastre',
-      };
-    }
-    // One die is 1 but the selected is higher — still flag isDesastre but selected is high die
-    isDesastre = true;
-  }
+  // Priority 6: Desastre only when the *selected* (highest) die is 1.
+  // If one die is 1 but the other is higher, selected is already the higher value —
+  // this is a normal roll and should be evaluated against difficulty, not flagged as Desastre.
+  // Both-1 is already handled above (Priority 4), so this branch only fires when
+  // exactly one die is 1 and the other die is also 1 (impossible here) or higher.
+  // In practice: selected === 1 is impossible here because both-1 was handled in Priority 4,
+  // so this branch is kept for clarity but will only trigger in the edge case where
+  // Math.max(dice1, dice2) === 1 — which cannot occur after Priorities 1-4.
+  // The correct behavior: do NOT set isDesastre when one die is 1 but selected > 1.
 
   // Priority 7: Normal outcome
   const total = selected + modifier;
 
-  if (isDesastre) {
-    result = 'desastre';
-  } else if (total >= difficulty) {
+  if (total >= difficulty) {
     result = 'sucesso';
   } else {
     result = 'falha';

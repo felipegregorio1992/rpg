@@ -11,6 +11,7 @@ import {
 import { addMemory } from '../services/supabase/campaignService';
 import type { NarrativeMessage, Memory, Enemy } from '../types';
 import type { CampaignContext } from '../game/narrative/aiPromptBuilder';
+import type { FGAttributes } from '../types/fabulasGoblins';
 import { buildFGSystemPrompt } from '../data/systems/fabulasGoblins/aiSystemPrompt';
 
 function makeNarrativeMessage(
@@ -44,6 +45,7 @@ export function useGame() {
     npcs,
     campaignPlayerId,
     selectedSystem,
+    fgCharacter,
     addNarrativeMessage,
     updateCharacterHp,
     updateCharacterMana,
@@ -125,7 +127,12 @@ export function useGame() {
         // 3. Handle skill check
         if (aiResponse.skillCheck) {
           const skillCheck = aiResponse.skillCheck;
-          const attrValue = character.attributes[skillCheck.attribute];
+          // For F&G sessions, attributes live in fgCharacter (FG keys like forca/agilidade).
+          // For generic sessions, they live in character.attributes (strength/dexterity/etc.).
+          const attrValue =
+            selectedSystem === 'fabulas-goblins' && fgCharacter
+              ? (fgCharacter.attributes[skillCheck.attribute as keyof FGAttributes] ?? 1)
+              : character.attributes[skillCheck.attribute as keyof typeof character.attributes];
           const testResult = await rollAttribute(attrValue, skillCheck.difficulty, skillCheck.action);
 
           // Show dice roll in narrative

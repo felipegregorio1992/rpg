@@ -464,13 +464,18 @@ function FGCharacterWizard() {
       }
 
       // Store F&G data in the fg_character_data column
-      await supabase
+      const { error: fgUpdateError } = await supabase
         .from('characters')
         .update({
           game_system: 'fabulas-goblins',
           fg_character_data: fgChar,
         })
         .eq('id', character.id);
+
+      if (fgUpdateError) {
+        setError(`Falha ao salvar dados F&G: ${fgUpdateError.message}`);
+        return;
+      }
 
       // Update fgChar id to match the DB id
       const finalFGChar = { ...fgChar, id: character.id };

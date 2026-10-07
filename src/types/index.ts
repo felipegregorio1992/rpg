@@ -294,7 +294,9 @@ export interface GameState {
 export interface AISkillCheck {
   type: 'skill_check';
   action: string;
-  attribute: keyof CharacterAttributes;
+  // Widened to accept both generic CharacterAttributes keys and F&G FGAttributes keys.
+  // The AI narrator may return F&G attribute names (forca, agilidade, etc.) for F&G sessions.
+  attribute: keyof CharacterAttributes | string;
   difficulty: number;
   narrative: string;
 }

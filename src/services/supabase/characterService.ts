@@ -14,7 +14,10 @@ export interface ServiceResult<T> {
 export interface CreateCharacterData {
   name: string;
   class: CharacterClass;
-  race: CharacterRace;
+  // Widened to string so that F&G species values ('goblin', 'armadon', etc.) can be stored
+  // in the race TEXT column (which has no CHECK constraint). CharacterRace is kept for
+  // generic characters; F&G characters pass their FGSpecies slug here.
+  race: CharacterRace | string;
   background: string;
   personality: string;
   description: string;
