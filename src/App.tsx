@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { LandingPage } from './pages/LandingPage';
 import { AuthPage } from './pages/AuthPage';
+import { GameSystemSelectPage } from './pages/GameSystemSelectPage';
 import { CharacterCreationPage } from './pages/CharacterCreationPage';
 import { CampaignSelectPage } from './pages/CampaignSelectPage';
 import { GamePage } from './pages/GamePage';
@@ -36,6 +37,14 @@ export function App() {
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/auth" element={<AuthPage />} />
+        <Route
+          path="/select-system"
+          element={
+            <ProtectedRoute>
+              <GameSystemSelectPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/create-character"
           element={

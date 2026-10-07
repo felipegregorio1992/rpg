@@ -11,6 +11,7 @@ import { ProgressBar } from '../components/ui/ProgressBar';
 import { useGameStore } from '../store/gameStore';
 import { useGame } from '../hooks/useGame';
 import { INITIAL_SCENE_DESCRIPTION } from '../data/campaigns/cinzasDeValdris';
+import { FG_INITIAL_SCENE } from '../data/systems/fabulasGoblins/aiSystemPrompt';
 import type { NarrativeMessage } from '../types';
 
 export function GamePage() {
@@ -19,6 +20,7 @@ export function GamePage() {
   const activeCombat = useGameStore((s) => s.activeCombat);
   const isLoading = useGameStore((s) => s.isLoading);
   const addNarrativeMessage = useGameStore((s) => s.addNarrativeMessage);
+  const selectedSystem = useGameStore((s) => s.selectedSystem);
 
   const { processAction, processCombatTurn, isProcessing, suggestedActions } = useGame();
 
@@ -30,15 +32,18 @@ export function GamePage() {
   // Initialize with opening scene if no narrative history
   useEffect(() => {
     if (narrativeHistory.length === 0 && character) {
+      const sceneText = selectedSystem === 'fabulas-goblins'
+        ? FG_INITIAL_SCENE
+        : INITIAL_SCENE_DESCRIPTION;
       const openingMessage: NarrativeMessage = {
         id: crypto.randomUUID(),
         type: 'narrator',
-        content: INITIAL_SCENE_DESCRIPTION,
+        content: sceneText,
         timestamp: new Date().toISOString(),
       };
       addNarrativeMessage(openingMessage);
     }
-  }, [narrativeHistory.length, character, addNarrativeMessage]);
+  }, [narrativeHistory.length, character, addNarrativeMessage, selectedSystem]);
 
   // Redirect if no character loaded
   useEffect(() => {

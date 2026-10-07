@@ -11,6 +11,7 @@ import {
 import { addMemory } from '../services/supabase/campaignService';
 import type { NarrativeMessage, Memory, Enemy } from '../types';
 import type { CampaignContext } from '../game/narrative/aiPromptBuilder';
+import { buildFGSystemPrompt } from '../data/systems/fabulasGoblins/aiSystemPrompt';
 
 function makeNarrativeMessage(
   type: NarrativeMessage['type'],
@@ -42,6 +43,7 @@ export function useGame() {
     quests,
     npcs,
     campaignPlayerId,
+    selectedSystem,
     addNarrativeMessage,
     updateCharacterHp,
     updateCharacterMana,
@@ -64,21 +66,25 @@ export function useGame() {
     const recentMessages = narrativeHistory.slice(-12);
     const activeQuests = quests.filter((q) => q.status === 'active');
 
+    const campaignSummary = selectedSystem === 'fabulas-goblins'
+      ? '' // FG system prompt is injected in narrateAction via buildFGSystemPrompt
+      : memories
+          .filter((m) => m.type === 'summary')
+          .slice(-3)
+          .map((m) => m.content)
+          .join(' ');
+
     return {
       character,
-      currentLocation: null, // future: load from store/db
+      currentLocation: null,
       activeQuests,
       npcsPresent: npcs,
       memories,
       recentMessages,
       activeCombat,
-      campaignSummary: memories
-        .filter((m) => m.type === 'summary')
-        .slice(-3)
-        .map((m) => m.content)
-        .join(' '),
+      campaignSummary,
     };
-  }, [character, narrativeHistory, memories, quests, npcs, activeCombat]);
+  }, [character, narrativeHistory, memories, quests, npcs, activeCombat, selectedSystem]);
 
   // ─── processAction ─────────────────────────────────────────────────
 
@@ -99,10 +105,12 @@ export function useGame() {
 
       try {
         // 2. Call AI for initial interpretation
-        const { data: aiResponse, error: aiError } = await narrateAction(
-          context,
-          playerAction,
-        );
+        const { data: aiResponse, error: aiError } = selectedSystem === 'fabulas-goblins'
+          ? await narrateAction(
+              { ...context, campaignSummary: buildFGSystemPrompt(context) },
+              playerAction,
+            )
+          : await narrateAction(context, playerAction);
 
         if (aiError || !aiResponse) {
           addNarrativeMessage(
@@ -249,6 +257,7 @@ export function useGame() {
       campaignPlayerId,
       saveGame,
       setLoading,
+      selectedSystem,
     ],
   );
 

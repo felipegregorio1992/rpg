@@ -12,6 +12,7 @@ import type {
   CombatLogEntry,
   EquipmentSlot,
 } from '../types';
+import type { FGCharacter } from '../types/fabulasGoblins';
 import { getCharacter } from '../services/supabase/characterService';
 import {
   saveCampaignState,
@@ -43,6 +44,9 @@ interface GameActions {
   addDecision: (decision: Decision) => void;
   saveGame: () => Promise<void>;
   setLoading: (loading: boolean) => void;
+  // F&G system
+  setSelectedSystem: (system: 'fabulas-goblins' | 'dnd5e' | 'custom') => void;
+  setFGCharacter: (character: FGCharacter) => void;
   // Internal
   _setCampaignPlayerId: (id: string) => void;
 }
@@ -53,6 +57,8 @@ interface PersistedSlice {
   campaignId: string | null;
   characterId: string | null;
   currentLocationId: string | null;
+  selectedSystem: 'fabulas-goblins' | 'dnd5e' | 'custom' | null;
+  fgCharacter: FGCharacter | null;
 }
 
 // ─── Full store type ──────────────────────────────────────────
@@ -60,11 +66,17 @@ interface PersistedSlice {
 type GameStore = GameState &
   GameActions & {
     campaignPlayerId: string | null;
+    selectedSystem: 'fabulas-goblins' | 'dnd5e' | 'custom' | null;
+    fgCharacter: FGCharacter | null;
   };
 
 // ─── Initial state ────────────────────────────────────────────
 
-const initialState: GameState & { campaignPlayerId: string | null } = {
+const initialState: GameState & {
+  campaignPlayerId: string | null;
+  selectedSystem: 'fabulas-goblins' | 'dnd5e' | 'custom' | null;
+  fgCharacter: FGCharacter | null;
+} = {
   campaignId: null,
   characterId: null,
   currentLocationId: null,
@@ -82,6 +94,8 @@ const initialState: GameState & { campaignPlayerId: string | null } = {
   isSaving: false,
   lastSaved: null,
   campaignPlayerId: null,
+  selectedSystem: null,
+  fgCharacter: null,
 };
 
 // ─── Store ────────────────────────────────────────────────────
@@ -249,6 +263,10 @@ export const useGameStore = create<GameStore>()(
       },
 
       setLoading: (loading) => set({ isLoading: loading }),
+
+      setSelectedSystem: (system) => set({ selectedSystem: system }),
+
+      setFGCharacter: (character) => set({ fgCharacter: character }),
     }),
 
     {
@@ -259,6 +277,8 @@ export const useGameStore = create<GameStore>()(
         campaignId: state.campaignId,
         characterId: state.characterId,
         currentLocationId: state.currentLocationId,
+        selectedSystem: state.selectedSystem,
+        fgCharacter: state.fgCharacter,
       }),
     },
   ),

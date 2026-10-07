@@ -61,7 +61,7 @@ export function AuthPage() {
           return;
         }
         // Auto-redirect after successful registration
-        navigate('/create-character');
+        navigate('/select-system');
       } else {
         const { error: signInError } = await signIn(email, password);
         if (signInError) {
