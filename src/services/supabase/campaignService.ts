@@ -31,7 +31,9 @@ interface CampaignStateRow {
   campaign_player_id: string;
   current_location_id: string | null;
   current_scene_id: string | null;
-  state_data: Record<string, unknown>;
+  world_state: Record<string, unknown>;
+  npc_states: Record<string, unknown>;
+  enemy_states: Record<string, unknown>;
   updated_at: string;
 }
 
@@ -135,7 +137,9 @@ export async function startCampaign(
     campaign_player_id: campaignPlayerId,
     current_location_id: null,
     current_scene_id: null,
-    state_data: {},
+    world_state: {},
+    npc_states: {},
+    enemy_states: {},
   });
 
   if (stateError) {
@@ -190,7 +194,9 @@ export async function saveCampaignState(
     upsertPayload.current_location_id = state.currentLocationId;
   if (state.currentSceneId !== undefined)
     upsertPayload.current_scene_id = state.currentSceneId;
-  if (state.stateData !== undefined) upsertPayload.state_data = state.stateData;
+  if (state.stateData !== undefined) {
+    upsertPayload.world_state = state.stateData;
+  }
 
   const { error } = await supabase
     .from('campaign_state')
@@ -218,7 +224,7 @@ export async function addEvent(
     type,
     description,
     metadata: metadata ?? {},
-    occurred_at: new Date().toISOString(),
+    // created_at é gerado automaticamente pelo banco
   });
 
   if (error) return { data: null, error: error.message };
@@ -276,7 +282,7 @@ export async function addDecision(
     scene_id: sceneId,
     description,
     consequence,
-    decided_at: new Date().toISOString(),
+    // created_at é gerado automaticamente pelo banco
   });
 
   if (error) return { data: null, error: error.message };
