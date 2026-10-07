@@ -18,11 +18,10 @@ export async function signUp(
     return { data: null, error: error?.message ?? 'Sign up failed' };
   }
 
-  // Insert profile row
+  // Insert profile row (sem coluna email — o email fica em auth.users)
   const { error: profileError } = await supabase.from('profiles').insert({
     id: data.user.id,
     username,
-    email,
   });
 
   if (profileError) {
