@@ -10,6 +10,7 @@ interface CardProps {
   title?: string;
   footer?: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
 // ─── Style maps ───────────────────────────────────────────────
@@ -58,6 +59,7 @@ export function Card({
   title,
   footer,
   className = '',
+  onClick,
 }: CardProps) {
   const isLight = variant === 'parchment';
 
@@ -66,10 +68,15 @@ export function Card({
       className={[
         'relative rounded-sm overflow-hidden',
         variantClasses[variant],
+        onClick ? 'cursor-pointer' : '',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
     >
       {/* Ornamental corners */}
       <OrnamentalCorner
