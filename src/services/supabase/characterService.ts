@@ -54,9 +54,9 @@ interface AttributeRow {
   intelligence: number;
   wisdom: number;
   charisma: number;
-  attack_bonus: number;
-  defense_bonus: number;
-  initiative_bonus: number;
+  attack: number;
+  defense: number;
+  initiative: number;
   critical_chance: number;
 }
 
@@ -68,9 +68,9 @@ function rowToCharacter(row: CharacterRow): Character {
     intelligence: 10,
     wisdom: 10,
     charisma: 10,
-    attack_bonus: 0,
-    defense_bonus: 0,
-    initiative_bonus: 0,
+    attack: 0,
+    defense: 0,
+    initiative: 0,
     critical_chance: 5,
   };
 
@@ -104,9 +104,9 @@ function rowToCharacter(row: CharacterRow): Character {
       charisma: attrs.charisma,
     },
     modifiers: {
-      attack: attrs.attack_bonus,
-      defense: attrs.defense_bonus,
-      initiative: attrs.initiative_bonus,
+      attack: attrs.attack,
+      defense: attrs.defense,
+      initiative: attrs.initiative,
       criticalChance: attrs.critical_chance,
     },
   };
@@ -176,9 +176,9 @@ export async function createCharacter(
     intelligence: attributes.intelligence,
     wisdom: attributes.wisdom,
     charisma: attributes.charisma,
-    attack_bonus: strMod,
-    defense_bonus: dexMod,
-    initiative_bonus: dexMod,
+    attack: strMod,
+    defense: dexMod,
+    initiative: dexMod,
     critical_chance: 5,
   });
 
